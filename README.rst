@@ -28,4 +28,8 @@ FALLBACK_STATIC_URL_USER - if the FALLBACK_STATIC_URL requires HTTP basic authen
 
 FALLBACK_STATIC_URL_PASS - if the FALLBACK_STATIC_URL requires HTTP basic authentication, this sets the password
 
+Notes
+========
 
+* There is an issue when using easy-thumbnails with fallbackserve. For each thumbnailed image on the page you are attempting to load, easy-thumbnails will try to access /media/test. 
+To stop this from happening simply add an empty file to your media folder .e.g. /public/media/test
