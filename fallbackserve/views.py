@@ -17,6 +17,8 @@ from django.conf import settings
 from django.http import Http404, HttpResponse, HttpResponseRedirect
 from django.views.static import serve as django_serve
 
+from .utils import fetch
+
 
 def serve(request, path, document_root=None, show_indexes=False, cache=True,
           fallback_server=None, auth_user=None, auth_pass=None):
@@ -60,14 +62,6 @@ def serve(request, path, document_root=None, show_indexes=False, cache=True,
         except AttributeError:
             print u"You're using static_fallback.serve to serve static content " + \
                    "however settings.FALLBACK_STATIC_URL has not been set."
-
-    try:
-        u = settings.FALLBACK_STATIC_URL_USER
-        p = settings.FALLBACK_STATIC_URL_PASS
-        if auth_user is None and auth_pass is None:
-            auth_user, auth_pass = u, p
-    except AttributeError:
-        pass
     
     # Save this for later to pass to Django.
     original_path = path
@@ -110,14 +104,7 @@ def serve(request, path, document_root=None, show_indexes=False, cache=True,
             fq_url = '%s%s' % (fallback_server, urllib.quote(path))
             print "fallback_serve: trying to fetch from %s" % fq_url
             try:
-                handlers = []
-                if auth_user or auth_pass:
-                    passman = urllib2.HTTPPasswordMgrWithDefaultRealm()
-                    passman.add_password(None, fallback_server, auth_user, auth_pass)
-                    authhandler = urllib2.HTTPBasicAuthHandler(passman)
-                    handlers.append(authhandler)
-                opener = urllib2.build_opener(*handlers)
-                contents = opener.open(fq_url).read()
+                contents = fetch(fq_url)
             except urllib2.HTTPError, e:
                 # Naive to assume a 404 - ed
                 raise Http404, 'Cannot get %s - %s' % (fq_url, str(e))   # RAISE

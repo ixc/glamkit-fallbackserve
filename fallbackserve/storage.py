@@ -7,6 +7,8 @@ from django.core.files.base import ContentFile
 from django.core.files.storage import FileSystemStorage
 from django.utils.encoding import smart_str
 
+from .utils import fetch
+
 
 class FallbackStorage(FileSystemStorage):
     def __init__(self, option=None):
@@ -43,8 +45,6 @@ class FallbackStorage(FileSystemStorage):
     def fetch_remote(self, name):
         self._fetching = True
         fallback_server = settings.FALLBACK_STATIC_URL
-        auth_user = getattr(settings, 'FALLBACK_STATIC_URL_USER', None)
-        auth_pass = getattr(settings, 'FALLBACK_STATIC_URL_PASS', None)
         if name.startswith(settings.MEDIA_ROOT):
             name = name[len(settings.MEDIA_ROOT):].lstrip('/')
         if settings.MEDIA_URL.startswith('http://'):
@@ -55,14 +55,7 @@ class FallbackStorage(FileSystemStorage):
         fq_url = '%s/%s' % (media_server, urllib.quote(smart_str(name)))
         print "FallbackStorage: trying to fetch from %s" % fq_url
         try:
-            handlers = []
-            if auth_user or auth_pass:
-                passman = urllib2.HTTPPasswordMgrWithDefaultRealm()
-                passman.add_password(None, fallback_server, auth_user, auth_pass)
-                authhandler = urllib2.HTTPBasicAuthHandler(passman)
-                handlers.append(authhandler)
-            opener = urllib2.build_opener(*handlers)
-            contents = opener.open(fq_url).read()
+            contents = fetch(fq_url)
         except urllib2.HTTPError, e:
             self._fetching = False
             raise e
