@@ -3,3 +3,4 @@ DS_STORE
 *.pyc
 *~
 glamkit_fallbackserve.egg-info
+/dist/
