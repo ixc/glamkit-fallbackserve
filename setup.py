@@ -3,8 +3,6 @@ from __future__ import print_function
 import setuptools
 import sys
 
-version = '0.2.dev1'
-
 # Convert README.md to reStructuredText.
 if {'bdist_wheel', 'sdist'}.intersection(sys.argv):
     try:
@@ -20,7 +18,7 @@ if {'bdist_wheel', 'sdist'}.intersection(sys.argv):
 
 setuptools.setup(
     name='glamkit-fallbackserve',
-    version=version,
+    use_scm_version={'version_scheme': 'post-release'},
     author='Interaction Consortium',
     author_email='studio@interaction.net.au',
     url='https://github.com/ixc/glamkit-fallbackserve',
@@ -34,6 +32,7 @@ setuptools.setup(
     ],
     extras_require={
     },
+    setup_requires=['setuptools_scm'],
     classifiers=[
         'Development Status :: 4 - Beta',
         'Environment :: Web Environment',
