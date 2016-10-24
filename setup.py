@@ -4,7 +4,7 @@ import setuptools
 import sys
 
 # Convert README.md to reStructuredText.
-if {'bdist_wheel', 'sdist'}.intersection(sys.argv):
+if set(['bdist_wheel', 'sdist']).intersection(sys.argv):
     try:
         import pypandoc
     except ImportError:
