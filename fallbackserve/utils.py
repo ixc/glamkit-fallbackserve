@@ -17,5 +17,5 @@ def fetch(url):
         authhandler = urllib2.HTTPBasicAuthHandler(passman)
         handlers.append(authhandler)
     opener = urllib2.build_opener(*handlers)
-    opener.addheaders = [('User-Agent', user_agent),]
+    opener.addheaders = [('User-Agent', user_agent), ('Accept', '*/*'),]
     return opener.open(url).read()
