@@ -13,6 +13,7 @@ import urllib
 import urllib2
 from itertools import imap
 
+import django
 from django.conf import settings
 from django.http import Http404, HttpResponse, HttpResponseRedirect
 from django.views.static import serve as django_serve
@@ -105,13 +106,15 @@ def serve(request, path, document_root=None, show_indexes=False, cache=True,
             print "fallback_serve: trying to fetch from %s" % fq_url
             try:
                 contents = fetch(fq_url)
-            except urllib2.HTTPError, e:
+            except urllib2.URLError, e:
                 # Naive to assume a 404 - ed
                 raise Http404, 'Cannot get %s - %s' % (fq_url, str(e))   # RAISE
             else:
                 # Found the doc. Return it to response.
                 mimetype = mimetypes.guess_type(fq_url)
-                response = HttpResponse(contents, mimetype=mimetype[0])
+                response = HttpResponse(contents, content_type=mimetype[0]) \
+                    if django.get_version() > '1.4' \
+                    else HttpResponse(contents, mimetype=mimetype[0])
                 
                 # Do we need to cache the file?
                 if cache:
